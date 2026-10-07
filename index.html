@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Doodle Reader</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Patrick+Hand&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eaf2ff;--grid:#cfdcfa;--ink:#14245a;--muted:#4b5b93;--card:#fff;--shadow:#14245a;--hl:#ffe14d;--pink:#ff6fa8;--mint:#35d9b7;--pen:#14245a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101d4c;--grid:#1c2f72;--ink:#eaf0ff;--muted:#a9b8ee;--card:#182a66;--shadow:#050b24;--hl:rgba(255,225,77,.4)}}
+:root[data-theme="dark"]{--bg:#101d4c;--grid:#1c2f72;--ink:#eaf0ff;--muted:#a9b8ee;--card:#182a66;--shadow:#050b24;--hl:rgba(255,225,77,.4)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);color:var(--ink);font-family:"Patrick Hand","Comic Sans MS",cursive,sans-serif;font-size:19px;line-height:1.35;
+background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:30px 30px}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 18px 60px;position:relative}
+header{position:relative;padding:8px 0 22px}
+h1{font-family:"Caveat Brush","Segoe Print",cursive;font-weight:400;font-size:clamp(52px,10vw,92px);line-height:.95;margin:0;letter-spacing:1px;transform:rotate(-1.5deg);display:inline-block}
+h1 span{background:linear-gradient(transparent 58%,var(--hl) 58% 92%,transparent 92%);padding:0 .12em}
+header p{max-width:30em;margin:10px 0 0;color:var(--muted);font-size:21px}
+.dd{position:absolute;fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.main{display:grid;grid-template-columns:1fr;gap:26px;align-items:start}
+@media(max-width:820px){.main{grid-template-columns:1fr}}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:255px 18px 225px 18px/18px 225px 18px 255px;box-shadow:6px 7px 0 var(--shadow);padding:22px 24px;position:relative}
+.card h2{font-family:"Caveat Brush",cursive;font-weight:400;font-size:32px;margin:0 0 10px;line-height:1}
+.sheet{position:relative;width:100%;max-width:none;margin:6px auto 0;aspect-ratio:900/320;border:3px solid var(--pen);border-radius:12px 20px 14px 22px;background:#fff;
+background-image:radial-gradient(#c6d3f5 1.4px,transparent 1.6px);background-size:26px 26px;box-shadow:inset 0 0 0 6px #fff}
+.sheet::before,.sheet::after{content:"";position:absolute;width:76px;height:24px;background:rgba(255,111,168,.55);top:-14px;left:-16px;transform:rotate(-32deg);z-index:2;pointer-events:none}
+.sheet::after{left:auto;right:-16px;transform:rotate(32deg);background:rgba(255,225,77,.7)}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;border-radius:inherit}
+.hint{color:var(--muted);font-size:17px;margin:14px 0 0;text-align:center}
+.row{display:flex;gap:12px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+button{font:inherit;font-size:22px;color:#14245a;background:var(--hl);border:3px solid var(--ink);border-radius:40px 14px 36px 14px/14px 36px 14px 40px;padding:6px 22px;cursor:pointer;box-shadow:3px 4px 0 var(--shadow);transition:transform .12s,box-shadow .12s}
+button:hover{transform:translate(-1px,-1px);box-shadow:4px 5px 0 var(--shadow)}
+button:active{transform:translate(2px,3px);box-shadow:1px 1px 0 var(--shadow)}
+button.alt{background:var(--mint)}
+button:focus-visible,input:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+.answer{display:flex;align-items:center;gap:18px}
+#big{font-family:"Caveat Brush",cursive;font-size:clamp(110px,22vw,150px);line-height:1;min-width:1.1ch;text-align:center;background:linear-gradient(transparent 62%,var(--hl) 62% 92%,transparent 92%);padding:0 .1em;color:var(--ink)}
+#msg{color:var(--muted)}
+#bars{margin:14px 0 0;display:grid;gap:8px}
+.b{display:grid;grid-template-columns:34px 1fr 52px;align-items:center;gap:10px;font-size:20px}
+.b i{font-style:normal;font-family:"Caveat Brush",cursive;font-size:28px;text-align:center}
+.b u{display:block;height:16px;border:2.5px solid var(--ink);border-radius:10px 6px 10px 6px;text-decoration:none;overflow:hidden}
+.b u s{display:block;height:100%;width:0;background:var(--mint);transition:width .35s}
+.b:first-child u s{background:var(--pink)}
+.b em{font-style:normal;text-align:right;color:var(--muted)}
+.see{display:flex;gap:18px;align-items:center;margin-top:20px;flex-wrap:wrap}
+#pv{width:112px;height:112px;image-rendering:pixelated;background:#000;border:3px solid var(--ink);border-radius:6px 14px 6px 14px}
+#brain{flex:1;min-width:190px;max-width:260px}
+#brain line{stroke:var(--ink);stroke-opacity:.22;stroke-width:1.2}
+#brain circle{stroke:var(--ink);stroke-width:2.2;fill:var(--mint);fill-opacity:.12;transition:fill-opacity .3s}
+.cap{font-size:16px;color:var(--muted);margin:2px 0 0}
+.low{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:30px}
+@media(max-width:820px){.low{grid-template-columns:1fr}}
+.prog{height:20px;border:3px solid var(--ink);border-radius:14px 8px 14px 8px;overflow:hidden;margin:10px 0}
+#pb{height:100%;width:0;background:repeating-linear-gradient(-45deg,var(--pink) 0 10px,var(--hl) 10px 20px);transition:width .3s}
+input{font:inherit;font-size:26px;width:64px;text-align:center;text-transform:uppercase;color:var(--ink);background:transparent;border:3px solid var(--ink);border-radius:14px 8px 14px 8px;padding:2px 6px}
+footer{margin-top:30px;text-align:center;color:var(--muted);font-size:17px}
+#tt{position:absolute;top:10px;right:14px;font-size:18px;padding:2px 14px;box-shadow:2px 3px 0 var(--shadow)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+#ov{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;border-radius:inherit}
+#big{font-size:clamp(44px,8vw,84px);line-height:1.15;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere;padding:0 .2em;margin:6px 0 0;display:inline}
+#msg{margin:12px 0 0}
+#bars{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.t{text-align:center;cursor:help}.t canvas{width:54px;height:54px;image-rendering:pixelated;background:#000;border:2px solid var(--ink);border-radius:4px 10px 4px 10px;display:block}
+.t b{font-family:"Caveat Brush",cursive;font-weight:400;font-size:28px;display:block;line-height:1.1}.t small{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<button id="tt" class="alt" title="Switch light or dark">Light / dark</button>
+<header>
+  <svg class="dd" style="right:8%;top:56px;width:70px" viewBox="0 0 40 40"><path d="M20 3l5 11 12 1-9 8 3 12-11-6-11 6 3-12-9-8 12-1z"/></svg>
+  <svg class="dd" style="right:22%;top:96px;width:96px" viewBox="0 0 48 30"><path d="M3 18c8-14 14 14 22 0s10 8 16-2M34 5l9 10-12 3"/></svg>
+  <svg class="dd" style="right:2%;top:120px;width:60px" viewBox="0 0 40 40"><circle cx="20" cy="20" r="7"/><path d="M20 3v6M20 31v6M3 20h6M31 20h6M8 8l4 4M28 28l4 4M32 8l-4 4M12 28l-4 4"/></svg>
+  <h1><span>Doodle</span> Reader</h1>
+  <p>Write a word, a number or a whole sentence and press Recognise. A Python backend splits your writing into characters and a neural network reads each one.</p>
+</header>
+
+<div class="main">
+  <section class="card">
+    <h2>Scribble here</h2>
+    <div class="sheet"><canvas id="cv" width="900" height="320" aria-label="Drawing canvas"></canvas><canvas id="ov" width="900" height="320"></canvas></div>
+    <p class="hint">Print each character separately, leave clear gaps between words, and write large. Two lines work too.</p>
+    <div class="row"><button id="go" class="alt">Recognise</button><button id="clr">Clear</button><button id="cp">Copy text</button></div>
+  </section>
+
+  <section class="card">
+    <h2>I read</h2>
+    <div id="big">?</div><p id="msg">Write a word, a number or a sentence, then press Recognise.</p>
+    <div id="bars"></div><div class="row" style="justify-content:flex-start;align-items:center;margin-top:18px"><input id="fix" style="width:min(100%,440px);font-size:22px;text-align:left;text-transform:none" aria-label="Corrected text"><button id="teach" class="alt">Teach it</button></div><p class="cap" id="tm">Wrong? Fix the text in the box and press Teach it. It learns from your handwriting and improves.</p>
+    <p class="cap">Each tile is one character as the network received it, with its confidence.</p>
+  </section>
+</div>
+
+<div class="low" style="grid-template-columns:1fr"><section class="card"><h2>Backend</h2><div id="st">Checking…</div><p class="cap">Flask serves this page. It finds each character as a connected stroke (merging i-dots and similar), groups characters into words and lines by their gaps, and reads each with a CNN trained on EMNIST handwriting. Inside a word, context settles 0/O, 1/I, 5/S, 8/B, 2/Z and 6/G, and short letters become lowercase.</p></section></div>
+<footer>Works best with printed characters, not joined-up cursive. Every tile shows what the network saw; hover it for the runner-up guesses.</footer>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),W=900,H=320;
+const cv=$('#cv'),cx=cv.getContext('2d'),og=$('#ov').getContext('2d'),mk=document.createElement('canvas');mk.width=W;mk.height=H;const mx=mk.getContext('2d');
+const blank=()=>{mx.fillStyle='#000';mx.fillRect(0,0,W,H)};blank();
+for(const c of[cx,mx]){c.lineCap=c.lineJoin='round';c.lineWidth=10}
+cx.strokeStyle='#14245a';mx.strokeStyle='#fff';
+let down=false,last=null,txt='',cur=null;
+const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]};
+const seg=(a,b)=>{for(const c of[cx,mx]){c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke()}};
+cv.addEventListener('pointerdown',e=>{down=true;cv.setPointerCapture(e.pointerId);og.clearRect(0,0,W,H);last=pos(e);seg(last,[last[0]+.01,last[1]])});
+cv.addEventListener('pointermove',e=>{if(!down)return;const p=pos(e);seg(last,p);last=p});
+cv.addEventListener('pointerup',()=>down=false);cv.addEventListener('pointercancel',()=>down=false);
+function reset(){txt='';cur=null;$('#fix').value='';$('#big').textContent='?';$('#msg').textContent='Write a word, a number or a sentence, then press Recognise.';$('#bars').innerHTML='';og.clearRect(0,0,W,H)}
+$('#clr').onclick=()=>{cx.clearRect(0,0,W,H);blank();reset()};
+$('#cp').onclick=()=>txt&&navigator.clipboard.writeText(txt).then(()=>{$('#cp').textContent='Copied';setTimeout(()=>$('#cp').textContent='Copy text',1200)});
+function show(j){
+  txt=j.text;cur=j;$('#fix').value=j.text;$('#big').textContent=j.text;
+  $('#msg').textContent=`${j.count} characters, average confidence ${Math.round(j.conf*100)}%.`+(j.conf<.6?' Try writing larger with clearer gaps between letters.':'');
+  const bars=$('#bars');bars.innerHTML='';og.clearRect(0,0,W,H);og.font='24px "Patrick Hand",cursive';
+  j.chars.forEach(c=>{
+    const[x0,y0,x1,y1]=c.box;og.strokeStyle=og.fillStyle='#ff6fa8';og.lineWidth=2.5;og.strokeRect(x0-4,y0-4,x1-x0+8,y1-y0+8);og.fillText(c.label,x0-2,y0>28?y0-9:y1+24);
+    const d=document.createElement('div');d.className='t';d.title=c.alt?'Also considered: '+c.alt:'Punctuation';
+    const k=document.createElement('canvas');k.width=k.height=28;
+    if(c.preview){const g=k.getContext('2d'),im=g.createImageData(28,28);c.preview.forEach((v,i)=>im.data.set([v,v,v,255],i*4));g.putImageData(im,0,0)}
+    d.append(k);const b=document.createElement('b');b.textContent=c.label;const s=document.createElement('small');s.textContent=Math.round(c.prob*100)+'%';d.append(b,s);bars.append(d);
+  });
+}
+$('#go').onclick=async()=>{
+  const b=$('#go');b.disabled=true;b.textContent='Reading…';
+  try{
+    const r=await fetch('/api/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:mk.toDataURL('image/png')})});
+    const j=await r.json();
+    if(!r.ok){$('#msg').textContent=j.error;return}
+    show(j);
+  }catch(e){$('#msg').textContent='Cannot reach the backend. Start it with: python app.py'}
+  finally{b.disabled=false;b.textContent='Recognise'}
+};
+$('#teach').onclick=async()=>{
+  if(!cur)return;const f=$('#fix').value.replace(/\s/g,'');
+  if(f.length!==cur.chars.length){$('#tm').textContent=`Expected ${cur.chars.length} characters (spaces ignored), got ${f.length}.`;return}
+  const s=[];cur.chars.forEach((c,i)=>{if(c.preview)s.push({preview:c.preview,label:f[i]})});
+  $('#tm').textContent='Learning…';
+  try{const r=await fetch('/api/teach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({samples:s})});const j=await r.json();
+    $('#tm').textContent=r.ok?`Learned ${j.added} characters (${j.total} lessons in total). Press Recognise again.`:j.error}
+  catch(e){$('#tm').textContent='Cannot reach the backend.'}
+};
+$('#tt').onclick=()=>{const r=document.documentElement,d=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=d?'light':'dark'};
+fetch('/api/health').then(r=>r.json()).then(j=>{$('#st').textContent=j.trained?`Backend online. ${j.classes} classes, ${j.params.toLocaleString()} parameters.`:'Backend online, but no trained model yet. Run: python train.py'}).catch(()=>{$('#st').textContent='Backend not reachable. Start it with: python app.py'});
+</script>
+</body>
+</html>
